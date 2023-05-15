@@ -1,7 +1,11 @@
+#starting the spark session
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
+#input source data path in s3 bucket
 S3_DATA_SOURCE_PATH = 's3://classnow/class1/houseRent.csv'
+
+# creating a folder which can store the output files in the s3 bucket
 S3_DATA_OUTPUT_PATH = 's3://classnow/in_class_output'
 
 
@@ -9,12 +13,12 @@ def main():
 
     spark = SparkSession.builder.appName('ADBMSProject').getOrCreate()
 
-    all_data = spark.read.csv(S3_DATA_SOURCE_PATH,header=True)
+    all_data = spark.read.csv(S3_DATA_SOURCE_PATH,header=True) # reading the input file 
 
-    print('Total number of records in the source data :%s' % all_data.count())
+    print('Total number of records in the source data :%s' % all_data.count()) # prints all the records in the input file
 
 
-
+#These are the queries and used print statements for each query to print the query output
     selected_data = all_data.where((col('beds') == 2) & (col('sqfeet')>1500))
 
     print('Total number of beds with 2 are :%s'%selected_data.count())
@@ -68,8 +72,9 @@ def main():
 
 
 
-    selected_data.write.mode('Overwrite').parquet(S3_DATA_OUTPUT_PATH)
-    print('selected data is successfully  saved to s3 : %s' % S3_DATA_OUTPUT_PATH)
+    selected_data.write.mode('Overwrite').parquet(S3_DATA_OUTPUT_PATH) # here the data is store in the form of parquet filetype. here in place of parquet if we give .csv it will be stored as a csv file in the output bucket in the s3.
+    
+    print('selected data is successfully  saved to s3 : %s' % S3_DATA_OUTPUT_PATH) # this prints the output path where the data is stored.
 
 
 if __name__ == '__main__' :
